@@ -1,0 +1,40 @@
+import { Router } from "express";
+import { sessionAuth } from "../middleware/session";
+import { createKey, listKeys, revokeKey } from "../services/key.service";
+import { AppError } from "../middleware/errorHandler";
+
+const router = Router();
+
+router.use(sessionAuth);
+
+//create a new api key on the server 
+router.post('/keys', async (req, res) => {
+    const { name } = req.body;
+    if (!name) throw new AppError(400, 'BAD_REQUEST', 'Key name is required');
+
+    const result = await createKey(req.userId!, name);
+
+    res.status(201).json({
+       key: result.key,
+       id: result.id,
+       prefix: result.prefix,
+       name: result.name
+    })
+});
+
+//to get all the keys which are created by the user
+router.get('/keys', async (req, res) => {
+    const keys = await listKeys(req.userId!);
+    res.json({ keys });
+});
+
+router.delete('/keys/:id', async (req, res) => {
+    const revoked = await revokeKey(req.userId!, req.params.id!);
+
+    if(!revoked) {
+        throw new AppError(404, 'Not Found', 'Key Not Found');
+    }
+    res.json({ message: 'Key Revoked'});
+});
+
+export default router;
