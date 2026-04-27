@@ -1,1 +1,1 @@
-![alt text](architecture-1.png)
+![alt text](architecture.png)
