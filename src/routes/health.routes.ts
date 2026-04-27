@@ -18,6 +18,7 @@ router.get('/health', async (_req, res) => {
             uptime: Math.floor(process.uptime()),
             db: { latency_ms: Date.now() - start },
             timestamp: new Date().toISOString(),
+            
         })
     } catch (err) {
         res.status(503).json({ status: 'unhealthy', error: (err as Error).message })
