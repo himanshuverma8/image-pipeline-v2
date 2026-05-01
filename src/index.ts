@@ -11,6 +11,8 @@ import cookieSession from "cookie-session";
 import passport from "passport";
 import authRoute from "./routes/auth.routes";
 import keyRoute from "./routes/key.routes";
+import uploadRoutes from "./routes/upload.routes";
+import imageRoutes from "./routes/image.routes";
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use(loggerMiddleware);
 app.use("/api", healthRoute);
 app.use("/api", authRoute);
 app.use("/api/v1", keyRoute);
+app.use("/api/v1", uploadRoutes);
+app.use("/api/v1", imageRoutes);
 
 app.use(errorHandler);
 
