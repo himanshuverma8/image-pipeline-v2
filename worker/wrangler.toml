@@ -1,0 +1,10 @@
+name = "image-pipeline-worker"
+main = "index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+API_URL = "http://localhost:300"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "___"
