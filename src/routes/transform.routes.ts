@@ -1,0 +1,21 @@
+import { Router } from 'express';
+import { apiKeyAuth } from '../middleware/auth';
+import { transformImage, listTransformations } from '../services/transform.service';
+import { AppError } from '../middleware/errorHandler';
+
+const router = Router();
+router.use(apiKeyAuth);
+
+router.post('/transform', async (req, res) => {
+    const {image_id, ...params} = req.body;
+    if (!image_id) throw new AppError(400, 'BAD_REQUEST', 'Required: image_id');
+    const result = await transformImage(req.userId!, image_id, params, req.requestId);
+    res.json(result);
+});
+
+router.post('/images/:id/transforms', async (req, res) => {
+    const transforms = await listTransformations(req.userId!, req.params.id);
+    res.json({ transformations: transforms});
+})
+
+export default router;
