@@ -13,6 +13,7 @@ import authRoute from "./routes/auth.routes";
 import keyRoute from "./routes/key.routes";
 import uploadRoutes from "./routes/upload.routes";
 import imageRoutes from "./routes/image.routes";
+import transformRoutes from "./routes/transform.routes";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/api", authRoute);
 app.use("/api/v1", keyRoute);
 app.use("/api/v1", uploadRoutes);
 app.use("/api/v1", imageRoutes);
+app.use("/api/v1", transformRoutes);
 
 app.use(errorHandler);
 
