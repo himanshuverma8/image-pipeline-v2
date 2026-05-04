@@ -7,4 +7,4 @@ API_URL = "http://localhost:300"
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "___"
+bucket_name = "hv-image-pipeline"
