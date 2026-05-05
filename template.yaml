@@ -19,7 +19,6 @@ Resources:
           R2_ACCESS_KEY_ID: !Ref R2AccessKeyId
           R2_SECRET_ACCESS_KEY: !Ref R2SecretAccessKey
           R2_BUCKET_NAME: !Ref R2BucketName
-https://8b276299371c760ed4c5a27b1e9afca0.r2.cloudflarestorage.com
 Parameters:
   R2Endpoint:
     Type: String
