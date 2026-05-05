@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "image-pipeline"
+resolve_s3 = true
+s3_prefix = "image-pipeline"
+region = "ap-south-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "R2BucketName=\"hv-image-pipeline\""
+image_repositories = []
+
+[default.global.parameters]
+region = "ap-south-1"
