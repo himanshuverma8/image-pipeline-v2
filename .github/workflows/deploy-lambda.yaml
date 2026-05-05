@@ -1,0 +1,45 @@
+name: Deploy Lambda
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lambda/**'
+      - 'template.yaml'
+      - '.github/workflows/deploy-lambda.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Lambda dependencies
+        run: cd lambda && npm ci
+
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - run: sam build
+
+      - name: SAM deploy
+        run: |
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              R2Endpoint=${{ secrets.R2_ENDPOINT }} \
+              R2AccessKeyId=${{ secrets.R2_ACCESS_KEY_ID }} \
+              R2SecretAccessKey=${{ secrets.R2_SECRET_ACCESS_KEY }} \
+              R2BucketName=${{ secrets.R2_BUCKET_NAME }}
