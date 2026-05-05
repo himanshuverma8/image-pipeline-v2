@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Image transform Lambda
+
+Resources:
+  ImageTransformFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: image-transform
+      CodeUri: lambda/
+      Handler: handler.handler
+      Runtime: nodejs20.x
+      MemorySize: 1024
+      Timeout: 30
+      Architectures: [x86_64]
+      Environment:
+        Variables:
+          R2_ENDPOINT: !Ref R2Endpoint
+          R2_ACCESS_KEY_ID: !Ref R2AccessKeyId
+          R2_SECRET_ACCESS_KEY: !Ref R2SecretAccessKey
+          R2_BUCKET_NAME: !Ref R2BucketName
+https://8b276299371c760ed4c5a27b1e9afca0.r2.cloudflarestorage.com
+Parameters:
+  R2Endpoint:
+    Type: String
+    NoEcho: true
+  R2AccessKeyId:
+    Type: String
+    NoEcho: true
+  R2SecretAccessKey:
+    Type: String
+    NoEcho: true
+  R2BucketName:
+    Type: String
+
+Outputs:
+  FunctionArn:
+    Value: !GetAtt ImageTransformFunction.Arn
