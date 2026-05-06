@@ -5,8 +5,6 @@ import { AppError } from "./errorHandler";
 export async function apiKeyAuth(req: Request, _res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
-    console.log('apiKeyAuth called', req.headers.authorization);
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new AppError(401, 'UNAUTHORIZED', 'Missing or Invalid Authorization Header');
     }
