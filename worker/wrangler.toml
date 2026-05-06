@@ -1,4 +1,4 @@
-name = "image-pipeline-worker"
+name = "image-pipeline-v2"
 main = "index.ts"
 compatibility_date = "2024-01-01"
 
