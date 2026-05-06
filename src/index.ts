@@ -33,8 +33,8 @@ app.use(
 
 app.use((req, res, next) => {
   if (req.session) {
-    req.session.regenerate = (cb) => cb(null);
-    req.session.save = (cb) => cb(null);
+    req.session.regenerate = (cb: any) => cb(null);
+    req.session.save = (cb: any) => cb(null);
   }
   next();
 });
