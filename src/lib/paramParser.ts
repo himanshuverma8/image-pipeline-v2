@@ -4,7 +4,7 @@ export const transformParamsSchema = z.object({
     w: z.coerce.number().int().min(1).max(4000).optional(),
     h: z.coerce.number().int().min(1).max(4000).optional(),
     fmt: z.enum(['webp', 'png', 'jpg', 'avif']).optional(),
-    q: z.coerce.number().int().min(1).max(100).default(80),
+    q: z.coerce.number().int().min(1).max(100).optional(),
     crop: z.enum(['center', 'top', 'bottom', 'left', 'right']).optional(),
     blur: z.coerce.number().min(1).max(20).optional(),
     sharpen: z.coerce.boolean().optional(),
