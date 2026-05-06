@@ -29,7 +29,11 @@ router.get('/keys', sessionAuth, async (req, res) => {
 });
 
 router.delete('/keys/:id', sessionAuth, async (req, res) => {
-    const revoked = await revokeKey(req.userId!, req.params.id!);
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    if (!id) throw new AppError(400, 'BAD_REQUEST', 'Key id is required');
+
+    const revoked = await revokeKey(req.userId!, id);
 
     if(!revoked) {
         throw new AppError(404, 'Not Found', 'Key Not Found');
