@@ -9,7 +9,7 @@ import { images } from "../db/schema";
 import { AppError } from "../middleware/errorHandler";
 
 const ALLOWED_TYPES = [
-  "images/jpeg",
+  "image/jpeg",
   "image/png",
   "image/webp",
   "image/avif",
