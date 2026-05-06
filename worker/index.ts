@@ -17,6 +17,7 @@ export default {
     }
 
     const [userId, imageFile] = segments;
+    const imageId = imageFile.replace(/\.[^.]+$/, '');
     const params = Object.fromEntries(url.searchParams);
     const requestId = crypto.randomUUID();
 
@@ -47,8 +48,7 @@ export default {
             "Authorization": `Bearer ${env.WORKER_API_KEY}`,
           },
           body: JSON.stringify({
-            user_id: userId,
-            image_file: imageFile,
+            image_id: imageId,
             ...params,
           }),
         });
