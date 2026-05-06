@@ -5,10 +5,10 @@ import { AppError } from "../middleware/errorHandler";
 
 const router = Router();
 
-router.use(sessionAuth);
+
 
 //create a new api key on the server 
-router.post('/keys', async (req, res) => {
+router.post('/keys', sessionAuth, async (req, res) => {
     const { name } = req.body;
     if (!name) throw new AppError(400, 'BAD_REQUEST', 'Key name is required');
 
@@ -23,12 +23,12 @@ router.post('/keys', async (req, res) => {
 });
 
 //to get all the keys which are created by the user
-router.get('/keys', async (req, res) => {
+router.get('/keys', sessionAuth, async (req, res) => {
     const keys = await listKeys(req.userId!);
     res.json({ keys });
 });
 
-router.delete('/keys/:id', async (req, res) => {
+router.delete('/keys/:id', sessionAuth, async (req, res) => {
     const revoked = await revokeKey(req.userId!, req.params.id!);
 
     if(!revoked) {
