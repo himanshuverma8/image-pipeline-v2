@@ -3,7 +3,15 @@
   "version": "1.0.0",
   "main": "handler.js",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1020.0",
-    "sharp": "^0.33.0"
+    "@aws-sdk/client-s3": "^3.1043.0",
+    "sharp": "^0.33.5"
+  },
+  "supportedArchitectures": {
+    "os": [
+      "linux"
+    ],
+    "cpu": [
+      "x64"
+    ]
   }
 }
