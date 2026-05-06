@@ -54,6 +54,7 @@ app.use("/api/v1", transformRoutes);
 
 app.use(errorHandler);
 
-app.listen(env.PORT, () => {
-  console.log(`server ruuning on port number ${env.PORT}`);
-});
+const port = Number(process.env.PORT) || 3000
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server on :${port}`)
+})
