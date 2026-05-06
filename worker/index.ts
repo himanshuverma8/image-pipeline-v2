@@ -1,6 +1,7 @@
 interface Env {
   R2_BUCKET: R2Bucket;
   API_URL: string;
+  WORKER_API_KEY: string;
 }
 
 export default {
@@ -43,6 +44,7 @@ export default {
           headers: {
             "Content-Type": "application/json",
             "X-Request-Id": requestId,
+            "Authorization": `Bearer ${env.WORKER_API_KEY}`,
           },
           body: JSON.stringify({
             user_id: userId,
