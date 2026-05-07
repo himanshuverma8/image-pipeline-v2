@@ -20,11 +20,14 @@ export default {
     const imageId = imageFile.replace(/\.[^.]+$/, '');
     const params = Object.fromEntries(url.searchParams);
     const requestId = crypto.randomUUID();
+    const originalExt = imageFile.split('.').pop() || 'jpg';   
 
     //if transform params exist, check r2 cache for transformed version
     if (Object.keys(params).length > 0) {
       const paramsHash = await hashParams(params);
-      const cacheKey = `transformed/${userId}/${paramsHash}/${imageFile}`;
+      const outputExt = params.fmt || originalExt;
+      
+      const cacheKey = `transformed/${userId}/${paramsHash}/${imageId}.${outputExt}`;
       //r2 cache check (at edge ~5ms )
       const cached = await env.R2_BUCKET.get(cacheKey);
       if (cached) {
@@ -49,6 +52,7 @@ export default {
           },
           body: JSON.stringify({
             image_id: imageId,
+            user_id: userId,
             ...params,
           }),
         });
@@ -75,6 +79,14 @@ export default {
             },
           });
         }
+
+        return jsonError(
+          `Transformed image not found at ${cacheKey}`,
+          502,
+          requestId,
+        );
+
+
       } catch (error) {
         return jsonError("Origin unavailable", 502, requestId);
       }
