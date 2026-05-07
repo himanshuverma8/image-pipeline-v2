@@ -4,15 +4,17 @@ import { transformImage, listTransformations } from '../services/transform.servi
 import { AppError } from '../middleware/errorHandler';
 
 const router = Router();
+router.use(apiKeyAuth);
 
 router.post('/transform', async (req, res) => {
-    const {image_id, ...params} = req.body;
+    const {user_id, image_id, ...params} = req.body;
     if (!image_id) throw new AppError(400, 'BAD_REQUEST', 'Required: image_id');
-    const result = await transformImage(req.userId!, image_id, params, req.requestId);
+    if (!user_id) throw new AppError(400, 'BAD_REQUEST', 'Required: user_id');
+    const result = await transformImage(user_id, image_id, params, req.requestId);
     res.json(result);
 });
 
-router.post('/images/:id/transforms', apiKeyAuth, async (req, res) => {
+router.post('/images/:id/transforms', async (req, res) => {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
     if (!id) throw new AppError(400, 'BAD_REQUEST', 'Key id is required');

@@ -4,8 +4,9 @@ import { getPresignedUploadUrl, uploadFromUrl } from '../services/upload.service
 import { AppError } from "../middleware/errorHandler";
 
 const router = Router();
+router.use(apiKeyAuth);
 
-router.post('/upload', apiKeyAuth, async (req, res) => {
+router.post('/upload', async (req, res) => {
     const { fileName, content_type, size } = req.body;
 
     if (!fileName || !content_type || !size) {
@@ -16,7 +17,7 @@ router.post('/upload', apiKeyAuth, async (req, res) => {
     res.status(201).json(result);
 });
 
-router.post('/upload/url', apiKeyAuth, async (req, res) => {
+router.post('/upload/url', async (req, res) => {
     const { url } = req.body;
      if (!url) throw new AppError(400, 'BAD_REQUEST', 'Required: url');
      const result = await uploadFromUrl(req.userId!, url);
