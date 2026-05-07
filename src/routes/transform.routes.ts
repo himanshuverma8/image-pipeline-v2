@@ -4,7 +4,6 @@ import { transformImage, listTransformations } from '../services/transform.servi
 import { AppError } from '../middleware/errorHandler';
 
 const router = Router();
-router.use(apiKeyAuth);
 
 router.post('/transform', async (req, res) => {
     const {image_id, ...params} = req.body;
@@ -13,7 +12,7 @@ router.post('/transform', async (req, res) => {
     res.json(result);
 });
 
-router.post('/images/:id/transforms', async (req, res) => {
+router.post('/images/:id/transforms', apiKeyAuth, async (req, res) => {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
     if (!id) throw new AppError(400, 'BAD_REQUEST', 'Key id is required');
