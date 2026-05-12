@@ -58,7 +58,10 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/api/auth/failed'}), 
 (_req, res) => {
-    res.json({message: 'Login Successful'});
+   const FRONTEND_URL = env.NODE_ENV === 'production' 
+   ? 'https://console.cdn.hv6.dev'
+   : 'http://localhost:5173';
+   res.redirect(FRONTEND_URL);
 });
 
 router.get('/auth/failed', (_req, res) => {
@@ -71,7 +74,6 @@ router.post('/auth/logout', (req, res) => {
             res.status(500).json({ error: 'Logout Failed'});
             return;
         } 
-
         req.session = null;
 
         res.json({ message: 'Logged Out'});
