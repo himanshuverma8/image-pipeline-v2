@@ -17,7 +17,13 @@ import transformRoutes from "./routes/transform.routes";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://console.cdn.hv6.dev',
+  ],
+  credentials: true,
+}));
 app.use(helmet());
 app.use(express.json());
 
@@ -28,6 +34,7 @@ app.use(
     maxAge: 7 * 24 * 60 * 60 * 1000,
     secure: env.NODE_ENV === "production",
     httpOnly: true,
+    sameSite: "none"
   }),
 );
 
