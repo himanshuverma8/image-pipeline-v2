@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { apiKeyAuth } from "../middleware/auth";
-import { getImage, listImages, updateImage } from "../services/image.service";
+import { deleteImage, getImage, listImages, updateImage } from "../services/image.service";
 
 const router = Router();
 router.use(apiKeyAuth);
@@ -17,7 +17,7 @@ router.get('/images', async (req, res) => {
     res.json(result);
 })
 
-router.get('image/:id', async (req, res) => {
+router.get('/images/:id', async (req, res) => {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
     const result = await getImage(req.userId!, id);
@@ -31,5 +31,12 @@ router.patch('/images/:id', apiKeyAuth, async (req, res) => {
     const result = await updateImage(req.userId!, id, filename);
     res.json(result);
 });
+
+router.delete('/images/:id', apiKeyAuth, async (req, res) => {
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    const result = await deleteImage(req.userId!, id);
+    res.json(result);
+})
 
 export default router;
