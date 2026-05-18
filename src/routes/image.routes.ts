@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { apiKeyAuth } from "../middleware/auth";
 import { deleteImage, getImage, listImages, updateImage } from "../services/image.service";
+import { flexAuth } from "../middleware/flexAuth";
 
 const router = Router();
-router.use(apiKeyAuth);
+router.use(flexAuth);
 
 router.get('/images', async (req, res) => {
     const { page = '1', limit = '20', search, format, sort = 'newest' } = req.query;
@@ -24,15 +24,15 @@ router.get('/images/:id', async (req, res) => {
     res.json(result);
 })
 
-router.patch('/images/:id', apiKeyAuth, async (req, res) => {
+router.patch('/images/:id', async (req, res) => {
     const { tags, filename } = req.body;
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
-    const result = await updateImage(req.userId!, id, filename);
+    const result = await updateImage(req.userId!, id, {tags, filename});
     res.json(result);
 });
 
-router.delete('/images/:id', apiKeyAuth, async (req, res) => {
+router.delete('/images/:id', async (req, res) => {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
     const result = await deleteImage(req.userId!, id);
