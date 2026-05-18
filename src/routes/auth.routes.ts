@@ -5,8 +5,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Router } from 'express';
 import { env } from '../config/env';
 import crypto from 'crypto';
-import { eq, and, gt, count } from 'drizzle-orm';
-import { userLogs } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { AppError } from '../middleware/errorHandler';
 
 passport.use(new GoogleStrategy({
@@ -57,32 +56,28 @@ passport.deserializeUser(async (id: string, done) => {
     }
 });
 
+const guestLoginAttempts = new Map<string, number[]>();
+
+
 const router = Router();
 
 router.post('/auth/guest', async (req, res) => {
     const [user] = await db.select().from(users).where(eq(users.googleId, env.GUEST_ID));
 
     if (!user) return res.status(500).json({ error: 'Guest user not found' });
-    //rate limted the guest
-    // In the guest route, before req.logIn():
-    const windowStart = new Date(Date.now() - 60_000);
+
     const raw = req.ip || req.headers['x-forwarded-for'];
     const ip = (Array.isArray(raw) ? raw[0] : raw)?.split(',')[0].trim() || 'unknown';
+    
+    const now = Date.now();
+    const attempts = guestLoginAttempts.get(ip) || [];
+    const recentAttempts = attempts.filter(t => now - t < 60_000);
 
-
-    const [{ count: recentAttempts }] = await db
-        .select({ count: count() })
-        .from(userLogs)
-        .where(and(
-        eq(userLogs.requestIp, ip),
-        eq(userLogs.action, 'guest_login'),
-        gt(userLogs.timestamp, windowStart)
-        ));
-
-    if (recentAttempts >= 5) {
+    if (recentAttempts.length >= 5) {
     throw new AppError(429, 'RATE_LIMITED', 'Too many guest login attempts');
     }
- 
+
+    guestLoginAttempts.set(ip, [...recentAttempts, now]);
 
     
     req.logIn(user, (err) => {
