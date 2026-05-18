@@ -82,6 +82,8 @@ export async function deleteImage(userId: string, imageId: string) {
                 Delete: { Objects: keys.map(Key => ( { Key } )) }
             }))
         }
+
+        return { deleted: true };
     } catch (err) {
         console.error(JSON.stringify({ action: 'r2_delete_failed', imageId, error: (err as Error).message }));
     }
