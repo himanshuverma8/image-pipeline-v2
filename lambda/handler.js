@@ -57,7 +57,7 @@ exports.handler = async (event) => {
   }
 
   // output format
-  const fmt = params.fmt || 'jpg';
+  const fmt = params.fmt || 'jpeg';
   const q = params.q || 80;
   switch (fmt) {
     case 'webp': pipeline = pipeline.webp({ quality: q }); break;
