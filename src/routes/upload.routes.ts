@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { apiKeyAuth } from "../middleware/auth";
 import { getPresignedUploadUrl, uploadFromUrl } from '../services/upload.service';
 import { AppError } from "../middleware/errorHandler";
+import { flexAuth } from "../middleware/flexAuth";
 
 const router = Router();
-router.use(apiKeyAuth);
+router.use(flexAuth);
 
 router.post('/upload', async (req, res) => {
     const { fileName, content_type, size } = req.body;
