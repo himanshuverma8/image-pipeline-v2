@@ -52,7 +52,8 @@ export async function transformImage(
 
   //cachem miss
   //-> invoke the lambda to process the image based on requested transformations params using sharp -> r2 store -> cdn serve
-  const ext = params.fmt || image.contentType.split("/")[1] || "jpg";
+  const ext = params.fmt === 'jpg' ? 'jpeg' : params.fmt || image.contentType.split("/")[1] || "jpeg";
+  const originalExt = image.contentType.split("/")[1] || "jpeg";
   const outputkey = `transformed/${userId}/${paramsHash}/${imageId}.${ext}`;
   const query = new URLSearchParams(
     Object.entries(params).reduce(
@@ -65,7 +66,8 @@ export async function transformImage(
       {} as Record<string, string>,
     ),
   ).toString();
-  const cdnUrl = `${R2_PUBLIC_URL}/${userId}/${imageId}.${ext}?${query}`;
+
+  const cdnUrl = `${R2_PUBLIC_URL}/${userId}/${imageId}.${originalExt}?${query}`;
 
   const result = await invokeTransformLambda({
     r2_key: image.originalKey,
