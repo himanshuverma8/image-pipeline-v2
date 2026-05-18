@@ -20,12 +20,12 @@ export default {
     const imageId = imageFile.replace(/\.[^.]+$/, '');
     const params = Object.fromEntries(url.searchParams);
     const requestId = crypto.randomUUID();
-    const originalExt = imageFile.split('.').pop() || 'jpg';   
+    const originalExt = imageFile.split('.').pop() || 'jpeg';   
 
     //if transform params exist, check r2 cache for transformed version
     if (Object.keys(params).length > 0) {
       const paramsHash = await hashParams(params);
-      const outputExt = params.fmt || originalExt;
+      const outputExt = params.fmt === 'jpg' ? 'jpeg' : params.fmt || originalExt;
       
       const cacheKey = `transformed/${userId}/${paramsHash}/${imageId}.${outputExt}`;
       //r2 cache check (at edge ~5ms )
