@@ -1,4 +1,4 @@
-import { uuid, text, timestamp, integer, jsonb, boolean, index, uniqueIndex, pgTable } from "drizzle-orm/pg-core";
+import { uuid, text, timestamp, integer, bigint, jsonb, boolean, index, uniqueIndex, pgTable } from "drizzle-orm/pg-core";
 
  //users table
  export const users = pgTable("users", {
@@ -7,6 +7,8 @@ import { uuid, text, timestamp, integer, jsonb, boolean, index, uniqueIndex, pgT
     email: text("email").notNull().unique(),
     googleId: text("google_id").notNull().unique(),
     storagePrefix: text("storage_prefix").notNull(),
+    avatarUrl: text("avatar_url"),
+    storageLimit: bigint('storage_limit', { mode: 'number' }).notNull().default(100 * 1024 * 1024),
     createdAt: timestamp("created_at").defaultNow().notNull()
  })
 

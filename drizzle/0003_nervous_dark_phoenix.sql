@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "storage_limit" bigint DEFAULT 104857600 NOT NULL;
