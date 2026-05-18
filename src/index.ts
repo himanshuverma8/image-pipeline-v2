@@ -14,6 +14,8 @@ import keyRoute from "./routes/key.routes";
 import uploadRoutes from "./routes/upload.routes";
 import imageRoutes from "./routes/image.routes";
 import transformRoutes from "./routes/transform.routes";
+import usageRoutes from "./routes/usage.routes";
+import { rateLimiter } from "./middleware/rateLimiter";
 
 const app = express();
 
@@ -34,7 +36,7 @@ app.use(
     maxAge: 7 * 24 * 60 * 60 * 1000,
     secure: env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "none"
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax"
   }),
 );
 
@@ -54,10 +56,12 @@ app.use(loggerMiddleware);
 
 app.use("/api", healthRoute);
 app.use("/api", authRoute);
+app.use("/api/v1", rateLimiter);
 app.use("/api/v1", keyRoute);
 app.use("/api/v1", uploadRoutes);
 app.use("/api/v1", imageRoutes);
 app.use("/api/v1", transformRoutes);
+app.use("/api/v1", usageRoutes);
 
 app.use(errorHandler);
 
