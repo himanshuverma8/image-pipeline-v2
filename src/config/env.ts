@@ -21,6 +21,8 @@ const envSchema = z.object({
 
   PORT: z.coerce.number().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  GUEST_ID: z.string(),
+  R2_TOTAL_LIMIT: z.coerce.number().default(10 * 1024 * 1024 * 1024) // 10GB default
 })
 
 export type Env = z.infer<typeof envSchema >;
