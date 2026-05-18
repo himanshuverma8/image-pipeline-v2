@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { apiKeyAuth } from '../middleware/auth';
 import { transformImage, listTransformations } from '../services/transform.service';
 import { AppError } from '../middleware/errorHandler';
+import { flexAuth } from '../middleware/flexAuth';
 
 const router = Router();
-router.use(apiKeyAuth);
+router.use(flexAuth);
 
 router.post('/transform', async (req, res) => {
     const {user_id, image_id, ...params} = req.body;
@@ -14,7 +14,7 @@ router.post('/transform', async (req, res) => {
     res.json(result);
 });
 
-router.post('/images/:id/transforms', async (req, res) => {
+router.get('/images/:id/transforms', async (req, res) => {
     const rawId = req.params.id;
     const id = Array.isArray(rawId) ? rawId[0] : rawId;
     if (!id) throw new AppError(400, 'BAD_REQUEST', 'Key id is required');
