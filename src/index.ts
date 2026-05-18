@@ -26,8 +26,12 @@ app.use(cors({
   ],
   credentials: true,
 }));
-app.use(helmet());
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
+
 app.use(express.json());
+app.set('trust proxy', 1);
 
 app.use(
   cookieSession({
@@ -36,11 +40,13 @@ app.use(
     maxAge: 7 * 24 * 60 * 60 * 1000,
     secure: env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: env.NODE_ENV === "production" ? "none" : "lax"
-  }),
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    domain: env.NODE_ENV === "production" ? ".hv6.dev" : undefined,
+}),
 );
 
-app.use((req, res, next) => {
+
+app.use((req, _res, next) => {
   if (req.session) {
     req.session.regenerate = (cb: any) => cb(null);
     req.session.save = (cb: any) => cb(null);
@@ -65,7 +71,7 @@ app.use("/api/v1", usageRoutes);
 
 app.use(errorHandler);
 
-const port = Number(process.env.PORT) || 3000
+const port = Number(process.env.PORT) || 3000;
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server on :${port}`)
 })
