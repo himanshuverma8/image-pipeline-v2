@@ -1,12 +1,14 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { MAX, v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import sharp from "sharp";
 import path from "path";
 import { r2, R2_BUCKET } from "../config/r2";
 import { db } from "../config/db";
-import { images } from "../db/schema";
+import { images, users } from "../db/schema";
 import { AppError } from "../middleware/errorHandler";
+import { eq, sum } from "drizzle-orm";
+import { env } from "../config/env";
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -16,6 +18,24 @@ const ALLOWED_TYPES = [
   "image/gif",
 ];
 const MAX_SIZE = 10 * 1024 * 1024;
+
+async function checkStorageLimit(userId: string, newSize: number) {
+    const [[{ storageLimit }], [{ usage }], [{ totalUsage }]] = await Promise.all([
+        db.select({ storageLimit: users.storageLimit }).from(users).where(eq(users.id, userId)),
+        db.select({ usage: sum(images.sizeBytes) }).from(images).where(eq(images.userId, userId)),
+        db.select({ totalUsage: sum(images.sizeBytes) }).from(images),
+    ]);
+
+    if (Number(totalUsage) + newSize > env.R2_TOTAL_LIMIT) {
+        throw new AppError(507, 'STORAGE_FULL', 'Service storage limit reached');
+    }
+
+    if (Number(usage) + newSize > Number(storageLimit)) {
+        throw new AppError(403, 'STORAGE_LIMIT_EXCEEDED', 'Storage limit reached');
+    }
+}
+
+
 
 export async function getPresignedUploadUrl(
   userId: string,
@@ -40,8 +60,12 @@ export async function getPresignedUploadUrl(
     );
   }
 
+  await checkStorageLimit(userId, size);
+
+
   const imageId = uuidv4();
-  const ext = path.extname(filename) || `.${contentType.split("/")[1]}`;
+  const rawExt = path.extname(filename).split('?')[0].toLowerCase();
+  const ext = rawExt === '.jpg' ? '.jpeg' : rawExt || `.${contentType.split('/')[1]?.split(';')[0]}` || '.jpeg';
   const r2Key = `originals/${userId}/${imageId}${ext}`;
   const uploadUrl = await getSignedUrl(
     r2,
@@ -93,11 +117,15 @@ export async function uploadFromUrl(userId: string, url: string) {
     throw new AppError(
       400,
       "BAD_REQUEST",
-      `${length / 1024 / 1024}MB exceeds the limit`,
+      `${buffer.length / 1024 / 1024}MB exceeds the limit`,
     );
   }
+
+  await checkStorageLimit(userId, buffer.length);
+
+
   const imageId = uuidv4();
-  const ext = contentType.split("/")[1]?.split(";")[0] || "jpg";
+  const ext = contentType.split("/")[1]?.split(";")[0] || "jpeg";
   const r2Key = `originals/${userId}/${imageId}.${ext}`;
 
   //get the dimensions
