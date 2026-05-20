@@ -92,7 +92,7 @@ export async function transformImage(
   return {
     cdn_url: cdnUrl,
     cached: false,
-    processing_time_ms: result.processing_time_ms,
+    processing_time: result.processing_time_ms,
   };
 }
 

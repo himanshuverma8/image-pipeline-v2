@@ -36,7 +36,7 @@ router.delete('/keys/:id', sessionAuth, async (req, res) => {
     const revoked = await revokeKey(req.userId!, id);
 
     if(!revoked) {
-        throw new AppError(404, 'Not Found', 'Key Not Found');
+        throw new AppError(404, 'NOT_FOUND', 'Key Not Found');
     }
     res.json({ message: 'Key Revoked'});
 });
