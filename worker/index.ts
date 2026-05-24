@@ -5,7 +5,25 @@ interface Env {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    // ─── L1: Cloudflare HTTP edge cache (per-PoP memory) ───
+    const cache = caches.default;
+    const cacheKey = new Request(request.url, request);
+    const cached = await cache.match(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Cache miss — run the original logic, then store the result
+    const response = await handleRequest(request, env);
+    if (response.ok && response.status === 200) {
+      ctx.waitUntil(cache.put(cacheKey, response.clone()));
+    }
+    return response;
+  },
+};
+
+async function handleRequest(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const segments = url.pathname.split("/").filter(Boolean);
 
@@ -34,7 +52,7 @@ export default {
         return new Response(cached.body, {
           headers: {
             "Content-Type": cached.httpMetadata?.contentType || "image/jpeg",
-            "Cache-Control": "public, max-age=2592000",
+            "Cache-Control": "public, max-age=31536000, immutable",
             "X-Request-Id": requestId,
             "X-Cache": "HIT",
           },
@@ -73,7 +91,7 @@ export default {
             headers: {
               "Content-Type":
                 transformed.httpMetadata?.contentType || "image/jpeg",
-              "Cache-Control": "public, max-age=2592000",
+              "Cache-Control": "public, max-age=31536000, immutable",
               "X-Request-Id": requestId,
               "X-Cache": "MISS",
             },
@@ -101,12 +119,12 @@ export default {
     return new Response(original.body, {
       headers: {
         "Content-Type": original.httpMetadata?.contentType || "image/jpeg",
-        "Cache-Control": "public, max-age=2592000",
+        "Cache-Control": "public, max-age=31536000, immutable",
         "X-Request-Id": requestId,
+        "X-Cache": "ORIGIN",
       },
     });
-  },
-};
+}
 
 async function hashParams(params: Record<string, string>): Promise<string> {
   const sorted = Object.keys(params)
