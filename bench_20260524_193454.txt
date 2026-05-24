@@ -1,0 +1,30 @@
+════════════════════════════════════════════════
+  CDN Benchmark — Sun May 24 19:34:54 UTC 2026
+  Host: azure-vm-1  Samples: 30
+  PoP:  colo=BOM
+════════════════════════════════════════════════
+
+=== YOUR CDN ===
+  content-type: image/webp
+  x-cache: HIT
+  cf-ray: a00ebd916a113c23-BOM
+
+  TTFB:
+  n=30  min=39ms  p50=42ms  p95=45ms  max=47ms
+  Total:
+  n=30  min=38ms  p50=42ms  p95=46ms  max=47ms
+
+=== CLOUDINARY ===
+  content-type: image/webp
+  content-length: 11702
+  cf-ray: a00ebdad2bfc3df1-BOM
+  access-control-expose-headers: Content-Length,Content-Disposition,ETag,Server-Timing,Vary,x-content-type-options
+  server-timing: cld-cloudflare;dur=30;start=2026-05-24T19:34:59.394Z;desc=hit,rtt;dur=4,content-info;desc="width=400,height=224,bytes=11702,format="webp",o=1,crt=1779649392,ef=(17);"
+  x-content-type-options: nosniff
+
+  TTFB:
+  n=30  min=50ms  p50=59ms  p95=71ms  max=79ms
+  Total:
+  n=30  min=50ms  p50=54ms  p95=69ms  max=71ms
+
+Done. Saved to: bench_20260524_193454.txt
