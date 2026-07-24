@@ -6,7 +6,7 @@ Cloudinary-style URL transformations (resize, crop, format, blur, modulate) usin
 AWS Lambda + Sharp.js, served from Cloudflare Workers with R2-cached edge delivery.
 
 
-[**Live Demo**](https://cdn.hv6.dev/906fc568-6cc1-49b1-8bc4-8795a7cba95e/949a53b1-7c07-4216-9adb-60c7ad294616.jpeg?fmt=webp&w=400) ·
+[**Live Demo**](https://cdn.hv6.dev/906fc568-6cc1-49b1-8bc4-8795a7cba95e/757ced26-d74f-43ae-a611-1d735d3ef8fc.jpeg?w=800&h=600&fmt=webp&q=85&crop=center&blur=2&sharpen=true&grayscale=true&rotate=90&flip=true&flop=true&brightness=1.2&saturation=1.5) ·
 [**Console**](https://console.cdn.hv6.dev) ·
 [**API Health**](https://image-pipeline-v2-express.hv6.dev/api/health)
 
@@ -17,6 +17,8 @@ AWS Lambda + Sharp.js, served from Cloudflare Workers with R2-cached edge delive
 ## Architecture
 
 ![Architecture diagram](architecture.png)
+
+![Database schema](schema_v1.png)
 
 Three independent layers, each deployed to its own platform:
 
