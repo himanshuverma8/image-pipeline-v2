@@ -1,0 +1,74 @@
+import "./types";
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import { env } from "./config/env";
+import { requestIdMiddleware } from "./middleware/requestId";
+import { loggerMiddleware } from "./middleware/logger";
+import healthRoute from "./routes/health.routes";
+import { errorHandler } from "./middleware/errorHandler";
+import cookieSession from "cookie-session";
+import passport from "passport";
+import authRoute from "./routes/auth.routes";
+import keyRoute from "./routes/key.routes";
+import uploadRoutes from "./routes/upload.routes";
+import imageRoutes from "./routes/image.routes";
+import transformRoutes from "./routes/transform.routes";
+import usageRoutes from "./routes/usage.routes";
+import { rateLimiter } from "./middleware/rateLimiter";
+
+const app = express();
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://console.cdn.hv6.dev',
+  ],
+  credentials: true,
+}));
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
+
+app.use(express.json());
+app.set('trust proxy', 1);
+
+app.use(
+  cookieSession({
+    name: "session",
+    secret: env.AUTH_SECRET,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    domain: env.NODE_ENV === "production" ? ".hv6.dev" : undefined,
+}),
+);
+
+
+app.use((req, _res, next) => {
+  if (req.session) {
+    req.session.regenerate = (cb: any) => cb(null);
+    req.session.save = (cb: any) => cb(null);
+  }
+  next();
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(requestIdMiddleware);
+app.use(loggerMiddleware);
+
+app.use("/api", healthRoute);
+app.use("/api", authRoute);
+app.use("/api/v1", rateLimiter);
+app.use("/api/v1", keyRoute);
+app.use("/api/v1", uploadRoutes);
+app.use("/api/v1", imageRoutes);
+app.use("/api/v1", transformRoutes);
+app.use("/api/v1", usageRoutes);
+
+app.use(errorHandler);
+
+export default app;
