@@ -1,6 +1,6 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import sharp from "sharp";
 import path from "path";
 import { r2, R2_BUCKET } from "../config/r2";
@@ -63,7 +63,7 @@ export async function getPresignedUploadUrl(
   await checkStorageLimit(userId, size);
 
 
-  const imageId = uuidv4();
+  const imageId = randomUUID();
   const rawExt = path.extname(filename).split('?')[0].toLowerCase();
   const ext = rawExt === '.jpg' ? '.jpeg' : rawExt || `.${contentType.split('/')[1]?.split(';')[0]}` || '.jpeg';
   const r2Key = `originals/${userId}/${imageId}${ext}`;
@@ -124,7 +124,7 @@ export async function uploadFromUrl(userId: string, url: string) {
   await checkStorageLimit(userId, buffer.length);
 
 
-  const imageId = uuidv4();
+  const imageId = randomUUID();
   const ext = contentType.split("/")[1]?.split(";")[0] || "jpeg";
   const r2Key = `originals/${userId}/${imageId}.${ext}`;
 
